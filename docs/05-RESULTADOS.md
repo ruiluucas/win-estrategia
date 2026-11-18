@@ -135,6 +135,57 @@ quatro erros somados.** Ver `06-BECOS-SEM-SAIDA.md` §11.
 
 ---
 
+## A9 — Frequência do mercado — **primeiro resultado replicado**
+
+`[MEDIDO]` Duas sessões independentes. Configuração **fixa** alvo p60 / stop p30.
+
+| sessão | n | total | mediana | acerto |
+|---|---:|---:|---:|---:|
+| 2026-11-16 | 91 | **+1.595** | **+52,5** | 53 % |
+| 2026-11-18 | 48 | **+914** | **+45,0** | 54 % |
+
+Custo 7,5 pts/trade descontado.
+
+`[MEDIDO]` **Robustez:**
+- passo de recálculo 30/60/120/240: +1.618 / +1.622 / +1.636 / +1.643 → sem look-ahead
+- custo 3 / 7,5 / 12 pts: +2.050 / +1.622 / +1.195 → sobrevive
+- 18/11: **25 de 25 células** da grade positivas; 16/11: 24 de 25
+
+`[MEDIDO]` **Fragilidades:**
+- filtro do zigzag instável dentro do dia (melhor: 55 às 10h, 75 às 11h, 50 às 12h)
+- pico da grade muda entre sessões (16/11 p60/p20; 18/11 p70/p40)
+- concentração: em 18/11 os 5 maiores trades = 58 % do total; sem eles +512 em 42 trades
+
+**Veredito:** `[INFERIDO]` a direção é sólida (acerto 53-54 %, mediana positiva nas
+duas sessões). Primeiro achado do projeto a sobreviver a dados novos.
+**Nível B** — falta 3+ sessões para nível A.
+
+Reproduzir:
+```bash
+python scripts/grade_frequencia.py 2026-11-16
+python scripts/grade_frequencia.py 2026-11-18
+python scripts/estuda_frequencia.py 2026-11-16
+```
+
+---
+
+## A10 — EGARCH escalado por horizonte
+
+`[MEDIDO-n=13]` **inconclusivo.**
+
+16/11: 18 ajustes do EGARCH(1,1,1), γ significativo em 6, σ de 10 s = 37,6 pts,
+fator da raiz do tempo 4,24× → σ do horizonte mediano **149,7 pts**.
+
+Melhor célula alvo 2,0σ / stop 2,5σ = +2.088 com 77 % de acerto — mas **n=13**,
+porque stop de 375 pts filtra quase tudo.
+
+`[INFERIDO]` O escalonamento corrigiu a escala. Precisa de grade em σ menor e
+mais sessões. Não compete com A9 neste estado.
+
+Reproduzir: `python scripts/grade_egarch.py 2026-11-16`
+
+---
+
 ## D1 — Observações não estatísticas
 
 `[MEDIDO]` Integridade de forma: 17/11, 13.897 snapshots, **todos** com exatamente
@@ -149,9 +200,12 @@ ask.
 
 ## O que estes resultados permitem concluir
 
-`[INFERIDO]` Nada sobre lucratividade. O único resultado com amostra razoável
-(B1) é de uma sessão e não foi replicado. O achado anterior de "exaustão
-invertida" em A7 **era artefato de rotulagem** e caiu após correção.
+`[INFERIDO]` Existe **um** resultado replicado: **A9 (frequência do mercado)** —
+alvo no percentil 60 das pernadas, stop no p30, positivo nas duas sessões com
+acerto 53-54 % e mediana positiva. É nível B, não A: faltam 3+ sessões.
+
+`[INFERIDO]` O resto não se sustenta: A7 caiu após correção de rotulagem, A5a foi
+refutada, A8 arquivada, A10 tem n=13.
 
 `[INFERIDO]` O que os dados **permitem** afirmar: a infraestrutura de medição
 funciona (integridade de 10 níveis, latência sub-segundo, controle reprodutível),

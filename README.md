@@ -15,10 +15,12 @@ P&L líquido de custo de corretagem e spread.
 ## Estado em uma linha
 
 Nenhuma das definições testadas até agora produziu resultado estatisticamente
-conclusivo. Um achado anterior ("exaustão invertida") foi rastreado até um erro
-de rotulagem e **rebaixado a hipótese** — ver `docs/06-BECOS-SEM-SAIDA.md` §11.
-A amostra é de **1 sessão válida** (16/11) contra as **20** exigidas pelo
-protocolo.
+conclusivo, **exceto A9 (frequência do mercado)**: alvo no p60 das pernadas, stop
+no p30 — positivo em duas sessões independentes, acerto 53-54 %, mediana positiva.
+É nível B (falta 3+ sessões para nível A).
+Outro achado anterior ("exaustão invertida") foi rastreado até um erro de
+rotulagem e **rebaixado a hipótese** — ver `docs/06-BECOS-SEM-SAIDA.md` §11.
+Amostra: **2 sessões válidas** (16/11 e 18/11) contra as **20** exigidas.
 
 ## Ler em ordem
 

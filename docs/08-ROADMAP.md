@@ -2,11 +2,12 @@
 
 ## Estado
 
-- Sessões coletadas: **3** (13/11 exploratória, 16/11 boa, 17/11 truncada)
-- Sessões válidas para confirmar: **1** (16/11)
+- Sessões coletadas: **4** (13/11 exploratória, 16/11 boa, 17/11 truncada, 18/11 boa)
+- Sessões válidas para confirmar: **2** (16/11, 18/11)
 - Sessões exigidas pelo protocolo: **20**
 - Hipóteses refutadas: **4** (V1, A1, A5a, A8)
-- Hipóteses em avaliação: **2** (A5b, A7)
+- **Hipóteses replicadas: 1 (A9 — frequência do mercado)**
+- Hipóteses em avaliação: **2** (A5b, A10)
 - Hipóteses bloqueadas por dado: **2** (A2, A3)
 
 ## Bloqueio principal
@@ -50,10 +51,23 @@ borda. O lado do nível (bid ou ask) é registrado com volume inicial e final.
 `last >= ask → compra`, e a taxa de erro dessa regra nunca foi medida
 (ver `02-DADOS.md`).
 
-### 4. Ampliar A5b
+### 4. Ampliar A9 — **PRIORIDADE**
 
-`[MEDIDO-n=99]` É o único resultado de nível B. Replicar em ≥ 3 sessões antes de
-qualquer conclusão.
+`[MEDIDO]` A9 (frequência) replicou em 2 sessões com configuração fixa
+(alvo p60 / stop p30). É o único achado do projeto a sobreviver a dados novos.
+
+**Decisão travada:** usar **alvo p60 / stop p30** — o meio do plato, não o melhor
+de nenhuma sessão — e **não alterar nenhum parâmetro** por 5 sessões.
+
+| sessão | total | mediana | acerto |
+|---|---:|---:|---:|
+| 16/11 | +1.595 | +52,5 | 53 % |
+| 18/11 | +914 | +45,0 | 54 % |
+
+**Critério de aprovação:** positiva em ≥ 4 das próximas 5 sessões.
+
+**O que ainda falta:** teste em regime diferente (dia lateral sem tendência,
+abertura com gap). As duas sessões testadas tinham tendência definida.
 
 ### 5. Só então: modelo
 

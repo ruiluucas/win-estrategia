@@ -184,3 +184,108 @@ Reproduzir: `python scripts/analise_a7.py 2026-11-16`
 
 **VEREDITO** Arquivada em 17/11 por decisão do pesquisador, para focar em
 absorção e exaustão. Pode voltar depois que A7 estiver resolvida.
+
+---
+
+## A9 — Frequência do mercado (PRIMEIRA HIPÓTESE REPLICADA)
+
+`[MEDIDO — replicado em 2 sessões independentes]` **Nível B.**
+
+Origem: intuição do pesquisador de que "o preço anda em pernadas de tamanho
+parecido". Testada em 18/11.
+
+### Definição
+
+```
+1. Zigzag no mid, filtro = 50 pts (oscilação mínima para contar pernada)
+2. Amplitudes das pernadas já concluídas (causal: só até o instante t)
+3. ALVO = percentil 60 dessas amplitudes
+4. STOP = percentil 30 dessas amplitudes
+5. Saída por alvo ou stop. Uma posição por vez. Sem tempo fixo.
+```
+
+Entrada: episódio A7 (mid na beirada de zona + lado agressor medido pela fita).
+
+### Medição
+
+`[MEDIDO]` Configuração fixa **alvo p60 / stop p30**, sem otimização por sessão:
+
+| sessão | n | total | mediana | acerto |
+|---|---:|---:|---:|---:|
+| 2026-11-16 | 91 | **+1.595** | **+52,5** | 53 % |
+| 2026-11-18 | 48 | **+914** | **+45,0** | 54 % |
+
+`[MEDIDO]` Em 18/11, **as 25 células da grade (alvo p40-p80 × stop p10-p40)
+foram positivas**. Em 16/11, 24 de 25.
+
+`[MEDIDO]` Custo de 7,5 pts/trade já descontado. Sensibilidade: resultado
+permanece positivo até 12 pts de custo.
+
+### Robustez verificada
+
+| teste | resultado |
+|---|---|
+| passo de recálculo 30/60/120/240 snapshots | +1.618 / +1.622 / +1.636 / +1.643 → **não depende de look-ahead** |
+| custo 3 / 7,5 / 12 pts | +2.050 / +1.622 / +1.195 → **sobrevive** |
+| duas sessões independentes | positivo nas duas |
+
+### O que NÃO é robusto
+
+`[MEDIDO]` **O filtro do zigzag é instável.** Análise por hora em 16/11:
+
+| hora | melhor filtro | 
+|---|---|
+| 10h | 55 |
+| 11h | 75 |
+| 12h | 50 |
+
+`[MEDIDO]` O pico da grade muda de sessão para sessão (16/11: p60/p20;
+18/11: p70/p40). Escolher o melhor de cada dia **é overfitting retroativo**.
+
+`[MEDIDO]` **Concentração alta:** em 18/11, os 5 maiores trades responderam por
+58 % do resultado. Sem eles: +512 em 42 trades = 12 pts/trade.
+
+### Veredito
+
+`[INFERIDO]` A **direção** é sólida: alvo em p60-p70 das pernadas com stop largo
+(p30-p40) foi positivo nas duas sessões, com acerto 53-54 % e mediana positiva.
+Isso sobreviveu a dados novos — é o primeiro achado do projeto a fazer isso.
+
+`[DESCONHECIDO]` Não se sabe se o efeito persiste em outras 3+ sessões, nem se
+sobrevive a um regime de mercado diferente (dia lateral, abertura com gap).
+
+**Decisão de método:** usar **alvo p60 / stop p30** fixo — ponto do meio do
+plato, não o melhor de nenhuma sessão — e **não tocar** por 5 sessões.
+
+Reproduzir:
+```bash
+python scripts/grade_frequencia.py 2026-11-16
+python scripts/grade_frequencia.py 2026-11-18
+python scripts/estuda_frequencia.py 2026-11-16
+python scripts/estuda_zigzag.py 2026-11-16
+```
+
+---
+
+## A10 — EGARCH escalado por horizonte
+
+`[MEDIDO-n=71]` — **inconclusivo, amostra pequena.**
+
+**DEFINIÇÃO** σ_t do EGARCH(1,1,1) com dist skew-t, expanding window,
+reestimado a cada 5 min sobre retornos de 10 s. Alvo e stop em múltiplos de σ,
+**escalado pela lei da raiz do tempo**: `σ_horizonte = σ_1passo × √(180/10)`.
+
+**MEDIÇÃO** 16/11: 18 ajustes, γ significativo em 6 de 14, σ de 10 s = 37,6 pts,
+fator 4,24× → σ do horizonte mediano **149,7 pts**.
+
+Melhor célula: alvo 2,0σ / stop 2,5σ = +2.088, acerto 77 %, **n=13**.
+
+**VEREDITO** `[MEDIDO]` O escalonamento corrigiu a escala (σ passou de 35 para
+150 pts). Mas o stop de 2,5σ ≈ 375 pts bloqueia quase todos os episódios e
+sobram 13 trades. **Sem amostra para julgar.**
+
+`[INFERIDO]` Comparado à frequência, o EGARCH é pior em mediana (−39 contra
++17,5) e concentração quando não escalado. Precisa de grade mais fina em σ menor
+e mais sessões.
+
+Reproduzir: `python scripts/grade_egarch.py 2026-11-16`
