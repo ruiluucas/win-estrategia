@@ -105,6 +105,36 @@ as outras 22 somavam **−353 pts**.
 
 ---
 
+## A7 — Absorção/exaustão nas beiradas, com rotulagem corrigida
+
+`[MEDIDO-n=235]` Sessão 16/11. 235 episódios únicos após remover look-ahead
+(zonas expansivas), corrigir rotulagem (sinal de `def_queda`) e dedupe (94 % dos
+4.102 episódios originais eram duplicatas).
+
+Controle: 1.000 sorteios — medianas 0 / −5 / −10 / −35 pts em 30/60/120/300 s.
+
+| classe | desfecho | n | alinhado | p bruto | p Holm |
+|---|---|---:|---:|---:|---:|
+| consumo | passou | 66 | 51,5 % | 0,902 | 1,000 |
+| **consumo** | **segurou** | 98 | **35,7 %** | **0,0061** | **0,0244** |
+| reforço | passou | 23 | 69,6 % | 0,093 | 0,279 |
+| reforço | segurou | 39 | 43,6 % | 0,522 | 1,000 |
+
+4 testes, Holm-Bonferroni aplicado.
+
+**Único sobrevivente:** `consumo/segurou` a **35,7 %** — abaixo do acaso.
+
+Sensibilidade (9 células: densidade 1,25/1,5/2 × janela 30/60/120):
+- `consumo/segurou`: **33–37 % em 6 de 9** — estável e sempre < 50 %
+- `reforço/passou`: **57–76 %**, varia 19 pts entre células vizinhas — **artefato**
+
+Reproduzir: `python scripts/analise_a7.py 2026-11-16`
+
+**O achado anterior de "exaustão invertida" (73 % de acerto) era produto de
+quatro erros somados.** Ver `06-BECOS-SEM-SAIDA.md` §11.
+
+---
+
 ## D1 — Observações não estatísticas
 
 `[MEDIDO]` Integridade de forma: 17/11, 13.897 snapshots, **todos** com exatamente
@@ -120,8 +150,8 @@ ask.
 ## O que estes resultados permitem concluir
 
 `[INFERIDO]` Nada sobre lucratividade. O único resultado com amostra razoável
-(B1) é de uma sessão e não foi replicado. O resultado mais promissor em magnitude
-(exaustão invertida em A7) não sobreviveu à segunda sessão.
+(B1) é de uma sessão e não foi replicado. O achado anterior de "exaustão
+invertida" em A7 **era artefato de rotulagem** e caiu após correção.
 
 `[INFERIDO]` O que os dados **permitem** afirmar: a infraestrutura de medição
 funciona (integridade de 10 níveis, latência sub-segundo, controle reprodutível),

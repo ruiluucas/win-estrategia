@@ -137,9 +137,81 @@ mesmo candle.
 
 ---
 
+## 11. "Exaustão invertida" — quatro erros que se somavam
+
+**Data:** 18/11/2026. **Sessão:** 16/11 (única válida).
+
+**O que se acreditava:** que "quando a parede segura firme, o preço recua
+77–177 pts" (acerto 73 %), tratado no README como achado estável.
+
+**Status: REFUTADO.** Rebaixado para `[HIPOTESE]` no README.
+
+### Erro 1 — rotulagem invertida
+
+A classe "exaustão" era `def_queda < 15 %` (volume não caiu). Medindo o valor
+real: `[MEDIDO]` a mediana de `def_queda` nessa classe foi **−227 %** e
+**−213 %** — o volume **cresceu** mais que o dobro.
+
+O rótulo dizia "parede aguentou"; o dado dizia "parede reabastecida". Fenômenos
+opostos.
+
+### Erro 2 — look-ahead na definição de zona
+
+`[MEDIDO]` `db.zonas_de` usava a densidade de tempo da **sessão inteira**. No
+instante `t` a definição de zona já "sabia" o futuro.
+
+Corrigido: janela **expansível** — no instante `t`, só snapshots `≤ t`.
+
+### Erro 3 — desfecho tautológico
+
+`[MEDIDO]` `passou` era `max_alem > campo` **dentro** do episódio, mas o episódio
+termina quando o preço sai do campo. Resultado: `passou = 0` em 4.102 de 4.102.
+
+Corrigido: mede 60 s **depois** do fim do episódio.
+
+### Erro 4 — duplicação de 94 %
+
+`[MEDIDO]` Zonas expansivas reproduzem a mesma borda em 119 instantes e cada
+instante re-detectava o mesmo episódio: **4.102 episódios para 235 únicos**.
+
+Corrigido com dedupe por `(borda, t_ini)`.
+
+### O que sobrou após as quatro correções
+
+`[MEDIDO-n=235]` 235 episódios únicos, controle de 1.000 sorteios, 4 testes com
+Holm:
+
+| classe | desfecho | n | alinhado | p bruto | p Holm |
+|---|---|---:|---:|---:|---:|
+| consumo | passou | 66 | 51,5 % | 0,902 | 1,000 |
+| **consumo** | **segurou** | 98 | **35,7 %** | **0,0061** | **0,0244** |
+| reforço | passou | 23 | 69,6 % | 0,093 | 0,279 |
+| reforço | segurou | 39 | 43,6 % | 0,522 | 1,000 |
+
+**Único sobrevivente:** `consumo/segurou` com 35,7 % — **abaixo do acaso**. O
+agressor acerta a direção em 1 de cada 3 casos.
+
+### Sensibilidade (9 células: densidade 1,25/1,5/2 × janela 30/60/120)
+
+- **`consumo/segurou`: 33–37 % em 6 de 9 células.** Estável, sempre abaixo de 50 %.
+- **`reforço/passou`: 57–76 %.** Varia 19 pontos entre células vizinhas.
+  **Artefato** — descartado.
+
+### Conclusão
+
+`[INFERIDO]` O "achado estável" não existia: era produto de quatro erros
+somados, o principal sendo a rotulagem invertida.
+
+`[MEDIDO]` O que existe agora é um resultado **negativo e estável** — mas de
+**uma sessão**, com n=98. Candidato a hipótese, não achado.
+
+**Reproduzir:** `python scripts/analise_a7.py 2026-11-16`
+
+---
+
 ## Padrão comum
 
-`[INFERIDO]` Nove dos dez erros têm a mesma forma: **a definição numérica mede
+`[INFERIDO]` Dez dos onze erros têm a mesma forma: **a definição numérica mede
 algo correlato, mas diferente, do fenômeno descrito**. Não foram erros de
 aritmética — foram erros de tradução entre a intuição e a métrica.
 
@@ -149,3 +221,7 @@ O único erro de outra natureza é o #8 (timezone), que é puramente técnico.
 perguntar "se este número estiver alto, o que exatamente aconteceu no mercado?".
 Se a resposta não for o fenômeno que se quer medir, a definição está errada antes
 de rodar.
+
+**Segunda implicação, aprendida no #11:** uma definição errada pode produzir
+resultado *estável entre sessões* e ainda assim ser artefato. Estabilidade não é
+prova de validade — só a correção da definição é.

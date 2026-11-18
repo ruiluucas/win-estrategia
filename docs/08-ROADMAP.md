@@ -29,33 +29,30 @@ coletor não religou sozinho; buraco de 16 min.
 - avisar quando religar
 - critério de sucesso: 20 sessões de manhã sem buraco > 60 s
 
-### 2. Corrigir a rotulagem de A7
+### 2. Corrigir a rotulagem de A7 — **FEITO em 18/11/2026**
 
-`[MEDIDO]` O defeito está identificado: na classe "exaustão", `def_queda` mediu
-−227 % — o volume cresceu. O rótulo está invertido.
+`[MEDIDO]` Correção concluída. Quatro erros encontrados e corrigidos: rotulagem
+invertida, look-ahead na definição de zona, desfecho tautológico e duplicação de
+94 % dos episódios.
 
-Trabalho:
-- classificar pelo **sinal** de `def_queda`, não por suposição
-- separar "volume no nível cai" (consumo) de "volume no nível sobe" (reforço)
-- medir os quatro quadrantes: consumo/alívio × passou/segurou
+`[MEDIDO-n=235]` Resultado pós-correção: o "achado estável" não sobreviveu.
+Único efeito que passa Holm e a sensibilidade é **negativo** (`consumo/segurou`
+com 35,7 % de alinhamento). Ver `06-BECOS-SEM-SAIDA.md` §11 e
+`analise_a7.py`.
 
-### 3. Definir quem ataca e quem defende
+### 3. Definir quem ataca e quem defende — **FEITO em 18/11/2026**
 
-`[INFERIDO]` Esta é a raiz dos três últimos erros. O código supõe qual lado ataca
-a partir da posição da borda, mas:
+`[MEDIDO]` Implementado em `analise_a7.py`: o atacante é escolhido pelo
+`lado_inferido` na fita (compra vs. venda no episódio), não pela posição da
+borda. O lado do nível (bid ou ask) é registrado com volume inicial e final.
 
-- borda superior de uma região pode ser **parede de compra** (bid) que absorve
-  venda
-- o mesmo preço pode ter bid e ask simultaneamente
-
-Antes de testar de novo: para cada episódio, registrar **o que de fato está
-naquele nível** (bid ou ask, com volume) e **qual lado agride**, medido por
-`lado_inferido`. Sem isso, qualquer resultado positivo pode ser artefato de
-rotulagem.
+`[INFERIDO]` Continua sendo inferência: `lado_inferido` é derivado de
+`last >= ask → compra`, e a taxa de erro dessa regra nunca foi medida
+(ver `02-DADOS.md`).
 
 ### 4. Ampliar A5b
 
-`[MEDIDO-n=148]` É o único resultado de nível B. Replicar em ≥ 3 sessões antes de
+`[MEDIDO-n=99]` É o único resultado de nível B. Replicar em ≥ 3 sessões antes de
 qualquer conclusão.
 
 ### 5. Só então: modelo

@@ -15,9 +15,10 @@ P&L líquido de custo de corretagem e spread.
 ## Estado em uma linha
 
 Nenhuma das definições testadas até agora produziu resultado estatisticamente
-conclusivo. Há um achado estável (exaustão invertida, definida pelo book) e
-vários becos sem saída documentados. A amostra é de **2 sessões**, contra as
-**20** exigidas pelo protocolo.
+conclusivo. Um achado anterior ("exaustão invertida") foi rastreado até um erro
+de rotulagem e **rebaixado a hipótese** — ver `docs/06-BECOS-SEM-SAIDA.md` §11.
+A amostra é de **1 sessão válida** (16/11) contra as **20** exigidas pelo
+protocolo.
 
 ## Ler em ordem
 

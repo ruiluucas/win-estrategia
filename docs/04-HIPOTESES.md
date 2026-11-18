@@ -129,33 +129,48 @@ preços contíguos com densidade > 1,5× a esperada.
 
 ---
 
-## A7 — Absorção e exaustão definidas pelo book (em avaliação)
+## A7 — Absorção e exaustão definidas pelo book, rotulagem corrigida
 
-`[HIPOTESE EM AVALIAÇÃO — resultado não replica]`
+`[MEDIDO-n=235]` **Sessão 16/11 apenas. Uma sessão, n=235 episódios únicos.**
+O resultado anterior (que indicava "exaustão invertida" com 73 % de acerto) foi
+**REFUTADO** — era produto de quatro erros somados. Ver
+`06-BECOS-SEM-SAIDA.md` §11.
 
-**DEFINIÇÃO** Episódio em que o mid entra no campo de ±2 ticks de uma borda de
-região. Dentro do episódio mede-se:
+**DEFINIÇÃO (corrigida em 18/11/2026)**
 
-- `def_queda` = quanto o volume parado no nível da borda caiu (1 − final/inicial)
-- `net` = agressão líquida na direção da borda (compra − venda inferidas)
+1. Zonas calculadas em **janela expansível** — no instante `t`, só snapshots
+   `≤ t`. (A versão anterior usava a sessão inteira = look-ahead.)
+2. Episódio = mid dentro do campo de ±2 ticks de uma borda de zona.
+3. `def_queda` = `1 − v_fim / v_ini` do nível da borda, no lado que domina
+   (bid ou ask, medido).
+4. Classes pelo **sinal** de `def_queda`, sem suposição:
+   - **consumo:** `def_queda > +10 %` (volume no nível caiu)
+   - **reforço:** `def_queda < −10 %` (volume no nível subiu)
+5. Escolha do atacante vem da **fita** (`lado_inferido`), não da posição da borda.
+6. Desfecho `passou` medido 60 s **após** o fim do episódio.
 
-Classes:
-- **EXAUSTÃO:** `def_queda < 15 %` (a parede aguentou firme)
-- **ABSORÇÃO:** `def_queda > 30 %` (a parede foi comida mas o preço não passou)
+**MEDIÇÃO** Controle de 1.000 sorteios (medianas 0/−5/−10/−35 pts em
+30/60/120/300 s). 4 testes com Holm.
 
-**MEDIÇÃO** Duas sessões de manhã, avanço na direção do ataque:
+| classe | desfecho | n | alinhado | p bruto | p Holm |
+|---|---|---:|---:|---:|---:|
+| consumo | passou | 66 | 51,5 % | 0,902 | 1,000 |
+| **consumo** | **segurou** | 98 | **35,7 %** | **0,0061** | **0,0244** |
+| reforço | passou | 23 | 69,6 % | 0,093 | 0,279 |
+| reforço | segurou | 39 | 43,6 % | 0,522 | 1,000 |
 
-| classe | 16/11 | 17/11 |
-|---|---:|---:|
-| exaustão n=17 / n=14, +60 s | 24 % | 36 % |
-| exaustão n=17 / n=14, +300 s | 29 % | 50 % |
-| absorção n=29 / n=21, +60 s | 41 % | 48 % |
-| absorção n=29 / n=21, +300 s | 38 % | 48 % |
+**SENSIBILIDADE** 9 células (densidade 1,25/1,5/2 × janela 30/60/120):
+- `consumo/segurou`: 33–37 % em 6 de 9 células — estável, sempre < 50 %
+- `reforço/passou`: 57–76 % — varia 19 pts entre células vizinhas → **artefato**
 
-**VEREDITO** Tudo próximo de 50 %. **Não replica.** E há um sinal de que a
-rotulagem está invertida: na classe "defesa segurou", `def_queda` mediu **−227 %**
-e **−213 %**, ou seja o volume *cresceu* — a parede não estava segurando, estava
-sendo reabastecida. Ver `06-BECOS-SEM-SAIDA.md` §4.
+**VEREDITO** `[MEDIDO]` Único efeito que sobrevive a Holm e à sensibilidade é
+**negativo**: quando o nível foi **consumido** e o preço **não rompeu**, o lado
+agressor acerta a direção em 35,7 % — pior que cara ou coroa.
+
+`[INFERIDO]` Sugere agressor do lado errado nesse contexto, mas `n=98` em
+**uma sessão** não sustenta afirmação. **Hipótese, não achado.**
+
+Reproduzir: `python scripts/analise_a7.py 2026-11-16`
 
 ---
 
